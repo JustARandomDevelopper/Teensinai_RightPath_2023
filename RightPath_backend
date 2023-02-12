@@ -1,0 +1,82 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Define the career choices and their corresponding attributes
+careers = {
+    "Medical Field": {"Communication": 4, "Leadership": 3, "Problem-solving": 4, "Critical thinking": 4, "Empathy": 5},
+    "Law School": {"Communication": 4, "Leadership": 3, "Problem-solving": 4, "Critical thinking": 5, "Empathy": 3},
+    "Engineering": {"Communication": 3, "Leadership": 4, "Problem-solving": 5, "Critical thinking": 4, "Empathy": 2},
+    "Business School": {"Communication": 5, "Leadership": 4, "Problem-solving": 3, "Critical thinking": 3, "Empathy": 4},
+    "Artist": {"Communication": 5, "Leadership": 2, "Problem-solving": 2, "Critical thinking": 3, "Empathy": 4},
+}
+
+# Define the attributes and their corresponding weight
+attributes = {
+    "Communication": 3,
+    "Leadership": 2,
+    "Problem-solving": 4,
+    "Critical thinking": 5,
+    "Empathy": 4,
+    
+}
+
+def calculate_career_score(answers):
+    score = 0
+    for attribute, weight in attributes.items():
+        score += answers[attribute] * weight
+    return score
+
+def get_best_career(answers):
+    best_career = None
+    max_score = 0
+    for career, attributes in careers.items():
+        career_score = calculate_career_score({attribute: answers[attribute] for attribute in attributes})
+        if career_score > max_score:
+            best_career = career
+            max_score = career_score
+    return best_career
+
+class QuizApp(tk.Tk):
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+        self.title("Right Path")
+        self.geometry("300x300")
+        self.answers = {attribute: 0 for attribute in attributes}
+        self.create_widgets()
+    
+    def create_widgets(self):
+        tk.Label(self, text="Communication").grid(row=0, column=0, padx=10, pady=10)
+        tk.Label(self, text="Leadership").grid(row=1, column=0, padx=10, pady=10)
+        tk.Label(self, text="Problem-solving").grid(row=2, column=0, padx=10, pady=10)
+        tk.Label(self, text="Critical thinking").grid(row=3, column=0, padx=10, pady=10)
+        tk.Label(self, text="Empathy").grid(row=4, column=0, padx=10, pady=10)
+        
+        self.communication_scale = tk.Scale(self, from_=1, to=5, orient="horizontal", command=lambda value: self.update_answers("Communication", int(value)))
+
+
+
+        self.communication_scale.grid(row=0, column=1)
+        
+        self.leadership_scale = tk.Scale(self, from_=1, to=5, orient="horizontal", command=lambda value: self.update_answers("Leadership", int(value)))
+        self.leadership_scale.grid(row=1, column=1)
+        
+        self.problem_solving_scale = tk.Scale(self, from_=1, to=5, orient="horizontal", command=lambda value: self.update_answers("Problem-solving", int(value)))
+        self.problem_solving_scale.grid(row=2, column=1)
+        
+        self.critical_thinking_scale = tk.Scale(self, from_=1, to=5, orient="horizontal", command=lambda value: self.update_answers("Critical thinking", int(value)))
+        self.critical_thinking_scale.grid(row=3, column=1)
+        
+        self.empathy_scale = tk.Scale(self, from_=1, to=5, orient="horizontal", command=lambda value: self.update_answers("Empathy", int(value)))
+        self.empathy_scale.grid(row=4, column=1)
+        
+        tk.Button(self, text="Submit", command=self.submit).grid(row=5, column=0, columnspan=2, pady=10)
+    
+    def update_answers(self, attribute, value):
+        self.answers[attribute] = value
+    
+    def submit(self):
+        best_career = get_best_career(self.answers)
+        messagebox.showinfo("Best Career", f"The best career choice for you is: {best_career}")
+
+app = QuizApp()
+app.mainloop()
